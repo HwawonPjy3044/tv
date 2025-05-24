@@ -1,0 +1,35 @@
+[Unit]
+Description=School Streamlit Dashboard
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/pi/tv
+ExecStart=/usr/bin/timeout 3600 /home/pi/tv/venv/bin/streamlit run app.py
+Restart=on-failure
+StandardOutput=journal
+StandardError=journal
+
+
+sudo nano /etc/systemd/system/streamlit-dashboard.timer
+
+
+[Unit]
+Description=Run Streamlit dashboard every morning
+
+[Timer]
+OnCalendar=*-*-* 08:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+
+
+sudo systemctl daemon-reload
+sudo systemctl enable streamlit-dashboard.timer
+sudo systemctl start streamlit-dashboard.timer
+
+# 상태 확인
+systemctl list-timers | grep streamlit
+journalctl -u streamlit-dashboard.service -n 50
+
